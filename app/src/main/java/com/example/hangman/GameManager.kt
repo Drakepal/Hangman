@@ -35,4 +35,44 @@ class GameManager {
             else -> R.drawable.game7
         }
     }
+
+    private fun getGameState(): GameState {
+        if(underscoreWord.equals(wordToGuess, true)) {
+            return GameState.Won(wordToGuess)
+        }
+        if (currentTries == maxTries) {
+            return GameState.Lost(wordToGuess)
+        }
+
+        drawable = getHangmanDrawable()
+        return GameState.Running(lettersUsed, underscoreWord, drawable)
+    }
+
+    fun play(letter: Char): GameState {
+        if (lettersUsed.contains(letter)) {
+            return GameState.Running(lettersUsed, underscoreWord, drawable)
+        }
+
+        lettersUsed += letter
+        val indexes = mutableListOf<Int>()
+
+        wordToGuess.forEachIndexed { index, char ->
+            if (char.equals(letter, true)) {
+                indexes.add(index)
+            }
+        }
+
+        var finalUnderscoreWord = "" + underscoreWord
+        indexes.forEach { index ->
+            val sb = StringBuilder(finalUnderscoreWord).also { it.setCharAt(index, letter) }
+            finalUnderscoreWord = sb.toString()
+
+        }
+        if (indexes.isEmpty()) {
+            currentTries++
+        }
+
+        underscoreWord = finalUnderscoreWord
+        return getGameState()
+    }
 }
