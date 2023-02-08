@@ -1,5 +1,7 @@
 package com.example.hangman
 
+import kotlin.random.Random
+
 class GameManager {
 
     private var lettersUsed: String = ""
@@ -46,6 +48,15 @@ class GameManager {
 
         drawable = getHangmanDrawable()
         return GameState.Running(lettersUsed, underscoreWord, drawable)
+    }
+    fun startNewGame(): GameState {
+        lettersUsed = ""
+        currentTries = 0
+        drawable = R.drawable.game7
+        val randomIndex = Random.nextInt(0, GameWords.words.size)
+        wordToGuess = GameWords.words[randomIndex]
+        generateUnderScores(wordToGuess)
+        return getGameState()
     }
 
     fun play(letter: Char): GameState {

@@ -8,6 +8,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
+import androidx.core.view.children
 import com.example.hangman.R.*
 
 class GameActivity : AppCompatActivity() {
@@ -33,7 +34,20 @@ class GameActivity : AppCompatActivity() {
         newGameButton = findViewById(R.id.newGameButton)
         lettersLayout = findViewById(R.id.lettersLayout)
         newGameButton.setOnClickListener {
+            startNewGame()
+        }
 
+        val gameState = gameManager.startNewGame()
+        updateUI(gameState)
+
+        lettersLayout.children.forEach { letterView ->
+            if (letterView is TextView) {
+                letterView.setOnClickListener {
+                    val gameState = gameManager.play((letterView).text[0])
+                updateUI(gameState)
+                letterView.visibility = View.GONE
+                 }
+            }
         }
     }
 
@@ -60,5 +74,18 @@ class GameActivity : AppCompatActivity() {
             }
             is GameState.Won -> showGameWon(gameState.wordToGuess)
         }
+    }
+
+    private fun startNewGame() {
+        gameLostTextView.visibility = View.GONE
+        gameWonTextView.visibility = View.GONE
+
+        val gameState = gameManager.startNewGame()
+
+        lettersLayout.visibility = View.VISIBLE
+        lettersLayout.children.forEach { letterView ->
+            letterView.visibility = View.VISIBLE
+        }
+        updateUI(gameState)
     }
 }
